@@ -304,6 +304,12 @@ jobs:
             git add snapshots/$target_branch/wasm-interpreter
             git add -u snapshots/$target_branch/wasm-interpreter
 
+            rm -rf snapshots/$target_branch/wasm-lsp
+            mkdir -p snapshots/$target_branch/wasm-lsp
+            cp -a ../tools/lsp/pkg/* ./snapshots/$target_branch/wasm-lsp/
+            git add snapshots/$target_branch/wasm-lsp
+            git add -u snapshots/$target_branch/wasm-lsp
+
             rm -rf snapshots/$target_branch/editor
             mkdir -p snapshots/$target_branch/editor
             cp -a ../tools/online_editor/dist/* snapshots/$target_branch/editor/
