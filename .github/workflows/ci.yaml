@@ -346,7 +346,7 @@ jobs:
     uses: slint-ui/slint/.github/workflows/build_docs.yaml@master
 
   wasm:
-    uses: slint-ui/slint/.github/workflows/wasm_editor_and_interpreter.yaml@master
+    uses: slint-ui/slint/.github/workflows/wasm_editor_and_interpreter.yaml@tobias/pr/online_lsp
 
   wasm_demo:
     uses: slint-ui/slint/.github/workflows/wasm_demos.yaml@master
