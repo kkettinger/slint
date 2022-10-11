@@ -215,6 +215,7 @@ public:
         cbindgen_private::slint_windowrc_set_physical_size(&inner, &size);
     }
 
+/*
     /// Registers a font by the specified path. The path must refer to an existing
     /// TrueType font.
     /// \returns an empty optional on success, otherwise an error string
@@ -242,6 +243,7 @@ public:
             return {};
         }
     }
+    */
 
 private:
     cbindgen_private::WindowAdapterRcOpaque inner;
