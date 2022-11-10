@@ -67,6 +67,8 @@ pub struct GlobalComponent {
     /// True when this is a built-in global that does not need to be generated
     pub is_builtin: bool,
 
+    pub two_way_bindings: Vec<(PropertyReference, PropertyReference)>,
+
     /// Analysis for each properties
     pub prop_analysis: Vec<crate::object_tree::PropertyAnalysis>,
 }

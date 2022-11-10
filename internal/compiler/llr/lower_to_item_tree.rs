@@ -503,6 +503,19 @@ fn lower_global(
     global_index: usize,
     state: &mut LoweringState,
 ) -> GlobalComponent {
+    let mut global_component = GlobalComponent {
+        name: global.root_element.borrow().id.clone(),
+        properties: Default::default(),
+        init_values: Default::default(),
+        const_properties: Default::default(),
+        public_properties: Default::default(),
+        exported: !global.exported_global_names.borrow().is_empty(),
+        aliases: global.global_aliases(),
+        two_way_bindings: Default::default(),
+        is_builtin: Default::default(),
+        prop_analysis: Default::default(),
+    };
+
     let mut mapping = LoweredSubComponentMapping::default();
     let mut properties = vec![];
     let mut const_properties = vec![];
@@ -544,25 +557,42 @@ fn lower_global(
     let mut init_values = vec![None; properties.len()];
 
     let ctx = ExpressionContext { mapping: &mapping, state, parent: None, component: global };
-    for (prop, binding) in &global.root_element.borrow().bindings {
-        assert!(binding.borrow().two_way_bindings.is_empty());
-        assert!(binding.borrow().animation.is_none());
-        let expression =
-            super::lower_expression::lower_expression(&binding.borrow().expression, &ctx).into();
 
-        let nr = NamedReference::new(&global.root_element, prop);
-        let property_index = match mapping.property_mapping[&nr] {
-            PropertyReference::Local { property_index, .. } => property_index,
-            _ => unreachable!(),
-        };
-        let is_constant = binding.borrow().analysis.as_ref().map_or(false, |a| a.is_const);
-        init_values[property_index] = Some(BindingExpression {
-            expression,
-            animation: None,
-            is_constant,
-            is_state_info: false,
-            use_count: 0.into(),
-        });
+    // crate::generator::handle_property_bindings_init(global, |e, p, binding| {
+    //     let prop = ctx.map_property_reference(&NamedReference::new(e, p));
+
+    // });
+
+    for (prop, binding) in &global.root_element.borrow().bindings {
+        if !binding.borrow().two_way_bindings.is_empty() {
+            let prop = ctx.map_property_reference(&NamedReference::new(&global.root_element, prop));
+            for tw in &binding.borrow().two_way_bindings {
+                global_component
+                    .two_way_bindings
+                    .push((prop.clone(), ctx.map_property_reference(tw)))
+            }
+        }
+        assert!(binding.borrow().animation.is_none());
+
+        if !matches!(binding.borrow().expression, tree_Expression::Invalid) {
+            let expression =
+                super::lower_expression::lower_expression(&binding.borrow().expression, &ctx)
+                    .into();
+
+            let nr = NamedReference::new(&global.root_element, prop);
+            let property_index = match mapping.property_mapping[&nr] {
+                PropertyReference::Local { property_index, .. } => property_index,
+                _ => unreachable!(),
+            };
+            let is_constant = binding.borrow().analysis.as_ref().map_or(false, |a| a.is_const);
+            init_values[property_index] = Some(BindingExpression {
+                expression,
+                animation: None,
+                is_constant,
+                is_state_info: false,
+                use_count: 0.into(),
+            });
+        }
     }
 
     let is_builtin = if let Some(builtin) = global.root_element.borrow().native_class() {
@@ -591,17 +621,26 @@ fn lower_global(
     };
 
     let public_properties = public_properties(global, &mapping, state);
-    GlobalComponent {
-        name: global.root_element.borrow().id.clone(),
-        properties,
-        init_values,
-        const_properties,
-        public_properties,
-        exported: !global.exported_global_names.borrow().is_empty(),
-        aliases: global.global_aliases(),
-        is_builtin,
-        prop_analysis,
-    }
+
+    global_component.properties = properties;
+    global_component.init_values = init_values;
+    global_component.public_properties = public_properties;
+    global_component.is_builtin = is_builtin;
+    global_component.prop_analysis = prop_analysis;
+
+    global_component
+    // GlobalComponent {
+    //     name: global.root_element.borrow().id.clone(),
+    //     properties,
+    //     init_values,
+    //     const_properties,
+    //     public_properties,
+    //     exported: !global.exported_global_names.borrow().is_empty(),
+    //     aliases: global.global_aliases(),
+    //     two_way_bindings: Default::default(),
+    //     is_builtin,
+    //     prop_analysis,
+    // }
 }
 
 fn make_tree(
