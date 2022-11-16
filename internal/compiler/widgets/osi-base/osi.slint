@@ -15,6 +15,9 @@ struct Palette := {
     primary: brush,
     primary_dark: brush,
     on_primary: brush,
+    surface: brush,
+    white: brush,
+    shadow: brush,
 }
 
 struct Durations := {
@@ -31,6 +34,9 @@ export global osi := {
         primary: #007aff,
         primary_dark: #094e96,
         on_primary: #ffffff,
+        surface: dark-color-scheme ? #2b2b2d : #767680,
+        white: #ffffff,
+        shadow: #000000,
     };
 
     property <Typography> typo: {

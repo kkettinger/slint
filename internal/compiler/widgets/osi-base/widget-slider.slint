@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-Slint-commercial
 
 
-import { md } from "md.slint";
+import { osi } from "osi.slint";
 
 // Allows to select a value from a range of values.
 export Slider := Rectangle {
@@ -13,7 +13,10 @@ export Slider := Rectangle {
     property<bool> enabled <=> touch.enabled;
     callback changed(float);
 
-    height: 20px;
+    min-height: 28px;
+    min-width: 100px;
+    horizontal-stretch: 1;
+    vertical-stretch: 0;
     
     accessible-role: slider;
     accessible-value: value;
@@ -21,53 +24,42 @@ export Slider := Rectangle {
     accessible-value-maximum: maximum;
     accessible-value-step: (maximum - minimum) / 100;
 
-    container := Rectangle {
-        background: md.sys.color.surface-variant;
-        opacity: 0.38;
+    i_container := Rectangle {
         y: (parent.height - height) / 2;
         width: 100%;
         height: 4px;
-        border-radius: 2px;
+        background: osi.palette.surface;
+        border-radius: 4px;
     }
 
     track := Rectangle {
-        background: md.sys.color.primary;
-        x: container.x;
+        x: i_container.x;
         y: (parent.height - height) / 2;
-        width: handle.x + (handle.width / 2);
-        height: container.height;
-        border-radius: container.border-radius;
+        width: i_handle.x + (i_handle.width / 2);
+        height: i_container.height;
+        background: osi.palette.primary;
+        border-radius: i_container.border-radius;
     }
 
-    state-layer := Rectangle {
-        opacity: 0;
-        background: md.sys.color.primary;
-        x: handle.x - (width - handle.width) / 2;
-        y: (parent.height - height) / 2;
-        width: 40px;
-        height: 40px;
-        border-radius: max(width, height) / 2;
-        animate opacity { duration: 250ms; easing: ease; }
-    }
 
-    handle := Rectangle {
-        background: md.sys.color.primary;
-        x: (parent.width - handle.width) * (value - minimum) / (maximum - minimum);
+    i_handle := Rectangle {
+        x: (parent.width - width) * (value - minimum) / (maximum - minimum);
         y: (parent.height - height) / 2;
         width: root.height;
-        height: root.height;
+        height: root.min-height;
+        background: osi.palette.white;
         border-radius: max(width, height) / 2;
-        drop-shadow-color: md.sys.color.shadow;
-        drop-shadow-blur: md.sys.elevation.level1;
-        drop-shadow-offset-y: 1px;
-
-        animate drop-shadow-blur { duration: 250ms; easing: ease; }
+        border-width: 1px;
+        border-color: osi.palette.shadow;
+        // drop-shadow-color: 
+        // drop-shadow-blur: 1px;
+        // drop-shadow-offset-y: 1px;
     }
 
     touch := TouchArea {
         property <float> pressed-value;
-        property <bool> handle-hover: has-hover && mouse-x >= handle.x && mouse-x <= handle.x + handle.width 
-            && mouse-y >= handle.y && mouse-y <= handle.y + handle.height;
+        property <bool> handle-hover: has-hover && mouse-x >= i_handle.x && mouse-x <= i_handle.x + i_handle.width 
+            && mouse-y >= i_handle.y && mouse-y <= i_handle.y + i_handle.height;
         pointer-event(event) => {
             if (event.button == PointerEventButton.left && event.kind == PointerEventKind.down) {
                 pressed-value = root.value;
@@ -76,7 +68,7 @@ export Slider := Rectangle {
         moved => {
             if (enabled && pressed) {
                 value = max(root.minimum, min(root.maximum,
-                    pressed-value + (touch.mouse-x - touch.pressed-x) * (maximum - minimum) / (root.width - handle.width)));
+                    pressed-value + (touch.mouse-x - touch.pressed-x) * (maximum - minimum) / (root.width - i_handle.width)));
                 root.changed(value);
             }
         }
@@ -97,22 +89,4 @@ export Slider := Rectangle {
             }
         }
     }
-
-    states [
-        disabled when !enabled : {
-            handle.background: md.sys.color.on-surface;
-            handle.drop-shadow-blur: md.sys.elevation.level0;
-            track.background: md.sys.color.on-surface;
-            container.background: md.sys.color.on-surface;
-            root.opacity: 0.38;
-        }
-        pressed when (touch.pressed && touch.handle-hover) || fs.has-focus : {
-            state-layer.opacity: 0.12;
-            handle.drop-shadow-blur: md.sys.elevation.level0;
-        }
-        hover when touch.handle-hover : {
-            state-layer.background: md.sys.color.on-surface;
-            state-layer.opacity: 0.08;    
-        }
-    ]
 }
