@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-Slint-commercial
 
 
-import { md } from "md.slint";
+import { osi } from "osi.slint";
 
 // Single line text input field with Material Design Outline TextField look and feel.
 export LineEdit := Rectangle {
@@ -18,18 +18,14 @@ export LineEdit := Rectangle {
     callback edited <=> input.edited;
    
     min-width: 120px;
-    height: 56px;
+  
     forward-focus: input;
+    horizontal-stretch: 1;
+    vertical-stretch: 0;
+    min-height: max(44px, i_layout.min-height);
 
-    container := Rectangle {
-        width: 100%;
-        height: 100%;
-        border-radius: 4px;
-        border-width: 1px;
-        border-color: md.sys.color.outline;
-    }
-
-    layout := HorizontalLayout {  
+   
+    i_layout := HorizontalLayout {  
         padding-left: 16px;
         padding-right: 16px;
 
@@ -37,17 +33,17 @@ export LineEdit := Rectangle {
             clip: true;
             input := TextInput {
                 property <length> computed_x;
-                property <length> padding-outer: layout.padding-left + layout.padding-right;
+                property <length> padding-outer: i_layout.padding-left + i_layout.padding-right;
     
                 x: min(0px, max(parent.width - width, computed_x));
                 width: max(parent.width, preferred-width);
                 height: 100%;
-                color: md.sys.color.on-surface;
+                color: osi.palette.text;
                 vertical-alignment: center;
                 // FIXME after Roboto font can be loaded
                 //font-family: md.sys.typescale.body-large.font;
-                font-size: md.sys.typescale.body-large.size;
-                font-weight: md.sys.typescale.body-large.weight;
+                font-size: osi.typo.default.font-size;
+                font-weight: osi.typo.default.font-weight;
     
                 cursor-position-changed(cpos) => {
                     if (cpos.x + computed_x < padding-outer) {
@@ -61,10 +57,9 @@ export LineEdit := Rectangle {
             placeholder := Text {
                 width: 100%;
                 height: 100%;
-                color: md.sys.color.outline-variant;
-                font-family: md.sys.typescale.body-large.font;
-                font-size: md.sys.typescale.body-large.size;
-                font-weight: md.sys.typescale.body-large.weight;
+                color: osi.palette.text-tertiary;
+                font-size: osi.typo.default.font-size;
+                font-weight: osi.typo.default.font-weight;
                 visible: false;
                 vertical-alignment: center;
 
@@ -77,17 +72,15 @@ export LineEdit := Rectangle {
         }    
     }
 
+    Rectangle {  
+        y: parent.height - height;
+        height: 1px;
+        background: osi.palette.border;
+    }
+
     states [
         disabled when !enabled : {
-            container.border-color: md.sys.color.on-surface;
-            container.opacity: 0.38;
-            input.opacity: 0.38;
-            placeholder.opacity: 0.38;
-        }
-        focused when has-focus : {
-            container.border-width: 2px;
-            container.border-color: md.sys.color.primary;
-            input.color: md.sys.color.primary;
+            opacity: osi.opacity-disabled;
         }
     ]
 }

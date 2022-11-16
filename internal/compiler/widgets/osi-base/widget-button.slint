@@ -80,7 +80,7 @@ export Button := Rectangle {
 
      states [
         disabled when !root.enabled : {
-           opacity: 0.5;
+           opacity: osi.opacity-disabled;
         }
         pressed when touch.pressed : {
             background: osi.palette.primary-dark;

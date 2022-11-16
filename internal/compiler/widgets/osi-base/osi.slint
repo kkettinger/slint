@@ -18,6 +18,8 @@ struct Palette := {
     surface: brush,
     white: brush,
     shadow: brush,
+    border: brush,
+    text-tertiary: brush,
 }
 
 struct Durations := {
@@ -37,6 +39,8 @@ export global osi := {
         surface: dark-color-scheme ? #2b2b2d : #767680,
         white: #ffffff,
         shadow: #000000,
+        border: dark-color-scheme ? #545458A6 : #0000001A,
+        text-tertiary: dark-color-scheme ? #EBEBF54D : #3c3c434D,
     };
 
     property <Typography> typo: {
@@ -50,4 +54,6 @@ export global osi := {
         fast: 150ms,
         medium: 300ms,
     };
+
+    property <float> opacity-disabled: 0.5;
 }

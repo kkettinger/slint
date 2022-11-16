@@ -89,4 +89,10 @@ export Slider := Rectangle {
             }
         }
     }
+
+    states [
+        disabled when !enabled : {
+            opacity: osi.opacity-disabled;
+        }
+    ]
 }
