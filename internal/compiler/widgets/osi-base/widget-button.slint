@@ -2,9 +2,8 @@
 // SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-Slint-commercial
 
 
-import { md } from "md.slint";
+import { osi } from "osi.slint";
 
-// Default button widget with Material Design Filled Button look and feel.
 export Button := Rectangle {
     callback clicked;
 
@@ -19,45 +18,30 @@ export Button := Rectangle {
 
     accessible-label <=> label.text;
     accessible-role: button;
+    horizontal-stretch: 0;
+    vertical-stretch: 0;
+    min-height: 50px;
+    border-radius: 8px;
+    background: osi.palette.primary;
 
-    height: 40px;
-   
-    container := Rectangle {  
-        width: 100%;
-        height: 100%;
-        border-radius: 20px;
-        background: md.sys.color.secondary-container;
-        drop-shadow-color: transparent;
-        drop-shadow-blur: md.sys.elevation.level0;
-        drop-shadow-offset-y: 1px;
-    }
-
-    state-layer := Rectangle {  
-        opacity: 0;
-        width: 100%;
-        height: 100%;
-        border-radius: container.border-radius;
-        background: md.sys.color.on-secondary-container;
-        animate opacity { duration: 250ms; easing: ease; }
-     }
-
-    HorizontalLayout {  
-        padding-left: 24px;
-        padding-right: 24px;
+    i_layout := HorizontalLayout {
+        padding-left: 16px;
+        padding-right: 16px;
+        padding-top: 3px;
+        padding-bottom: 3px;
         spacing: 8px;
 
         if (icon.width > 0 && icon.height > 0): Image {
             source <=> icon;
             width: 24px;
-            opacity: label.opacity;
         }
 
         label := Text {
-            color: md.sys.color.on-secondary-container;
-            vertical-alignment: center;
+            color: osi.palette.on-primary;
             horizontal-alignment: center;
-            font-size: md.sys.typescale.label-large.size;
-            font-weight: md.sys.typescale.label-large.weight;
+            vertical-alignment: center;
+            font-weight: osi.typo.default.font-weight;
+            font-size: osi.typo.default.font-size;
         }
     }
 
@@ -82,23 +66,32 @@ export Button := Rectangle {
         }
     }
 
-    states [
+    i_focus_border := Rectangle {  
+        x: (parent.width - width) / 2;
+        width: parent.width + 4px;
+        height: parent.height + 4px;
+        border-radius: parent.border-radius + 2px;
+        border-width: 1px;
+        border-color: osi.palette.text;
+        opacity: 0.0;
+
+        animate opacity { duration: osi.durations.medium; }
+    }
+
+     states [
         disabled when !root.enabled : {
-            container.background: md.sys.color.on-surface;
-            container.opacity: 0.12;
-            label.opacity: 0.38;
-            label.color: md.sys.color.on-surface;
+           opacity: 0.5;
         }
         pressed when touch.pressed : {
-            state-layer.opacity: 0.12;
+            background: osi.palette.primary-dark;
         }
-        hover when touch.has-hover : {
-            state-layer.opacity: 0.08;    
-            container.drop-shadow-blur: md.sys.elevation.level1;
-            container.drop-shadow-color: md.sys.color.shadow;
+        checked when root.checked : {
+            background: osi.palette.primary-dark;
         }
         focused when fs.has-focus : {
-            state-layer.opacity: 0.12;
+            i_focus_border.opacity: 1.0;
         }
     ]
+
+    animate background { duration: osi.durations.medium; } 
 }

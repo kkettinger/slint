@@ -2,6 +2,7 @@ import { ColorSchemeSelector } from "color-scheme.slint";
 
 struct Font := {
     font_size: length,
+    font_weight: float,
 }
 
 struct Typography := {
@@ -16,10 +17,15 @@ struct Palette := {
     on_primary: brush,
 }
 
-export global osi := {
-    property<bool> dark-color-scheme: ColorSchemeSelector.dark-color-scheme;
+struct Durations := {
+    fast: duration,
+    medium: duration,
+}
 
-    property<Palette> palette: {
+export global osi := {
+    property <bool> dark-color-scheme: ColorSchemeSelector.dark-color-scheme;
+
+    property <Palette> palette: {
         background: dark-color-scheme ? #000000 : #ffffff,
         text: dark-color-scheme ? #ffffff : #000000,
         primary: #007aff,
@@ -27,9 +33,15 @@ export global osi := {
         on_primary: #ffffff,
     };
 
-    property<Typography> typo: {
+    property <Typography> typo: {
         default: {
             font_size: 17px,
+            font-weight: 700,
         }
+    };
+
+    property <Durations> durations: {
+        fast: 150ms,
+        medium: 300ms,
     };
 }
