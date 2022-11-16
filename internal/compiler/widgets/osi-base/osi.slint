@@ -1,0 +1,35 @@
+import { ColorSchemeSelector } from "color-scheme.slint";
+
+struct Font := {
+    font_size: length,
+}
+
+struct Typography := {
+    default: Font,
+}
+
+struct Palette := {
+    background: brush,
+    text: brush,
+    primary: brush,
+    primary_dark: brush,
+    on_primary: brush,
+}
+
+export global osi := {
+    property<bool> dark-color-scheme: ColorSchemeSelector.dark-color-scheme;
+
+    property<Palette> palette: {
+        background: dark-color-scheme ? #000000 : #ffffff,
+        text: dark-color-scheme ? #ffffff : #000000,
+        primary: #007aff,
+        primary_dark: #094e96,
+        on_primary: #ffffff,
+    };
+
+    property<Typography> typo: {
+        default: {
+            font_size: 17px,
+        }
+    };
+}
