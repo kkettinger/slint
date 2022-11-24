@@ -7,14 +7,14 @@ import { osi } from "osi.slint";
 export Button := Rectangle {
     callback clicked;
 
-    property<string> text <=> label.text;
-    property<bool> has-focus: fs.has-focus;
-    property<bool> pressed: self.enabled && touch.pressed;
-    property<bool> enabled <=> touch.enabled;
-    property<bool> checkable;
-    property<bool> checked;
-    property<image> icon;
-    property<length> font-size <=> label.font-size;
+    in-out property<string> text <=> label.text;
+    out  property<bool> has-focus: fs.has-focus;
+    out property<bool> pressed: self.enabled && touch.pressed;
+    in property<bool> enabled <=> touch.enabled;
+    in property<bool> checkable;
+    in-out property<bool> checked;
+    in property<image> icon;
+    in property<length> font-size <=> label.font-size;
 
     accessible-label <=> label.text;
     accessible-role: button;

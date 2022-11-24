@@ -10,7 +10,9 @@ struct Typography := {
 }
 
 struct Palette := {
+    default: brush,
     background: brush,
+    background-grey: brush,
     text: brush,
     primary: brush,
     primary_dark: brush,
@@ -31,7 +33,9 @@ export global osi := {
     property <bool> dark-color-scheme: ColorSchemeSelector.dark-color-scheme;
 
     property <Palette> palette: {
+        default: #34c759,
         background: dark-color-scheme ? #000000 : #ffffff,
+        background-grey: dark-color-scheme ? #393a3e : #767680,
         text: dark-color-scheme ? #ffffff : #000000,
         primary: #007aff,
         primary_dark: #094e96,
@@ -45,7 +49,7 @@ export global osi := {
 
     property <Typography> typo: {
         default: {
-            font_size: 17px,
+            font-size: 17px,
             font-weight: 700,
         }
     };

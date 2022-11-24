@@ -6,11 +6,11 @@ import { osi } from "osi.slint";
 
 // Allows to select a value from a range of values.
 export Slider := Rectangle {
-    property<float> maximum: 100;
-    property<float> minimum: 0;
-    property<float> value;
-    property<bool> has-focus: fs.has-focus;
-    property<bool> enabled <=> touch.enabled;
+    in property<float> maximum: 100;
+    in property<float> minimum: 0;
+    in-out property<float> value;
+    out property<bool> has-focus: fs.has-focus;
+    in property<bool> enabled <=> touch.enabled;
     callback changed(float);
 
     min-height: 28px;
