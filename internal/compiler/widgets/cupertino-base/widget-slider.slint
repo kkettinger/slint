@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-Slint-commercial
 
 
-import { osi } from "osi.slint";
+import { cupertino } from "cupertino.slint";
 
 // Allows to select a value from a range of values.
 export Slider := Rectangle {
@@ -28,7 +28,7 @@ export Slider := Rectangle {
         y: (parent.height - height) / 2;
         width: 100%;
         height: 4px;
-        background: osi.palette.surface;
+        background: cupertino.palette.surface;
         border-radius: 4px;
     }
 
@@ -37,7 +37,7 @@ export Slider := Rectangle {
         y: (parent.height - height) / 2;
         width: i_handle.x + (i_handle.width / 2);
         height: i_container.height;
-        background: osi.palette.primary;
+        background: cupertino.palette.primary;
         border-radius: i_container.border-radius;
     }
 
@@ -47,10 +47,10 @@ export Slider := Rectangle {
         y: (parent.height - height) / 2;
         width: root.height;
         height: root.min-height;
-        background: osi.palette.white;
+        background: cupertino.palette.white;
         border-radius: max(width, height) / 2;
         border-width: 1px;
-        border-color: osi.palette.shadow;
+        border-color: cupertino.palette.shadow;
         // drop-shadow-color: 
         // drop-shadow-blur: 1px;
         // drop-shadow-offset-y: 1px;
@@ -92,7 +92,7 @@ export Slider := Rectangle {
 
     states [
         disabled when !enabled : {
-            opacity: osi.opacity-disabled;
+            opacity: cupertino.opacity-disabled;
         }
     ]
 }

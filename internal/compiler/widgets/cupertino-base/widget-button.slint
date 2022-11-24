@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-Slint-commercial
 
 
-import { osi } from "osi.slint";
+import { cupertino } from "cupertino.slint";
 
 export Button := Rectangle {
     callback clicked;
@@ -22,7 +22,7 @@ export Button := Rectangle {
     vertical-stretch: 0;
     min-height: 50px;
     border-radius: 8px;
-    background: osi.palette.primary;
+    background: cupertino.palette.primary;
 
     i_layout := HorizontalLayout {
         padding-left: 16px;
@@ -37,11 +37,11 @@ export Button := Rectangle {
         }
 
         label := Text {
-            color: osi.palette.on-primary;
+            color: cupertino.palette.on-primary;
             horizontal-alignment: center;
             vertical-alignment: center;
-            font-weight: osi.typo.default.font-weight;
-            font-size: osi.typo.default.font-size;
+            font-weight: cupertino.typo.default.font-weight;
+            font-size: cupertino.typo.default.font-size;
         }
     }
 
@@ -72,26 +72,26 @@ export Button := Rectangle {
         height: parent.height + 4px;
         border-radius: parent.border-radius + 2px;
         border-width: 1px;
-        border-color: osi.palette.text;
+        border-color: cupertino.palette.text;
         opacity: 0.0;
 
-        animate opacity { duration: osi.durations.medium; }
+        animate opacity { duration: cupertino.durations.medium; }
     }
 
      states [
         disabled when !root.enabled : {
-           opacity: osi.opacity-disabled;
+           opacity: cupertino.opacity-disabled;
         }
         pressed when touch.pressed : {
-            background: osi.palette.primary-dark;
+            background: cupertino.palette.primary-dark;
         }
         checked when root.checked : {
-            background: osi.palette.primary-dark;
+            background: cupertino.palette.primary-dark;
         }
         focused when fs.has-focus : {
             i_focus_border.opacity: 1.0;
         }
     ]
 
-    animate background { duration: osi.durations.medium; } 
+    animate background { duration: cupertino.durations.medium; } 
 }

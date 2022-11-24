@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-Slint-commercial
 
 
-import { osi } from "osi.slint";
+import { cupertino } from "cupertino.slint";
 
 // Single line text input field with Material Design Outline TextField look and feel.
 export LineEdit := Rectangle {
@@ -38,12 +38,12 @@ export LineEdit := Rectangle {
                 x: min(0px, max(parent.width - width, computed_x));
                 width: max(parent.width, preferred-width);
                 height: 100%;
-                color: osi.palette.text;
+                color: cupertino.palette.text;
                 vertical-alignment: center;
                 // FIXME after Roboto font can be loaded
                 //font-family: md.sys.typescale.body-large.font;
-                font-size: osi.typo.default.font-size;
-                font-weight: osi.typo.default.font-weight;
+                font-size: cupertino.typo.default.font-size;
+                font-weight: cupertino.typo.default.font-weight;
     
                 cursor-position-changed(cpos) => {
                     if (cpos.x + computed_x < padding-outer) {
@@ -57,9 +57,9 @@ export LineEdit := Rectangle {
             placeholder := Text {
                 width: 100%;
                 height: 100%;
-                color: osi.palette.text-tertiary;
-                font-size: osi.typo.default.font-size;
-                font-weight: osi.typo.default.font-weight;
+                color: cupertino.palette.text-tertiary;
+                font-size: cupertino.typo.default.font-size;
+                font-weight: cupertino.typo.default.font-weight;
                 visible: false;
                 vertical-alignment: center;
 
@@ -75,12 +75,12 @@ export LineEdit := Rectangle {
     Rectangle {  
         y: parent.height - height;
         height: 1px;
-        background: osi.palette.border;
+        background: cupertino.palette.border;
     }
 
     states [
         disabled when !enabled : {
-            opacity: osi.opacity-disabled;
+            opacity: cupertino.opacity-disabled;
         }
     ]
 }

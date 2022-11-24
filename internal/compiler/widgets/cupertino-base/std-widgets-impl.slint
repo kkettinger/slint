@@ -1,0 +1,23 @@
+// Copyright © SixtyFPS GmbH <info@slint-ui.com>
+// SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-Slint-commercial
+
+// widget imports
+import { Button } from "widget-button.slint";
+import { CheckBox } from "widget-checkbox.slint";
+import { ScrollView } from "widget-scrollview.slint";
+import { cupertino } from "cupertino.slint";
+
+export { Button, CheckBox, ScrollView }
+
+export global StyleMetrics := {
+    property<color> default-text-color: cupertino.palette.text;
+    property<color> textedit-text-color: cupertino.palette.text;
+    property<brush> window-background: cupertino.palette.background;
+    property<bool> dark-color-scheme: cupertino.dark-color-scheme;
+    property<length> text-cursor-width: 2px;
+    property<brush> textedit-background: cupertino.palette.background;
+    property<brush> textedit-background-disabled: cupertino.palette.background;
+    property<color> textedit-text-color-disabled: cupertino.dark-color-scheme ? #FFFFFF80 : #00000080;
+    property<length> layout-spacing: 8px;
+    property<length> layout-padding: 16px;  
+}

@@ -3,7 +3,7 @@
 
 
 import { md } from "md.slint";
-import { osi } from "osi.slint";
+import { cupertino } from "cupertino.slint";
 
 // Selection control that can be toggled between checked und unchecked by click.
 export CheckBox := Rectangle {
@@ -31,7 +31,7 @@ export CheckBox := Rectangle {
             width: 51px;
             height: 31px;
             border-radius: 16px;
-            background: osi.palette.background-grey;
+            background: cupertino.palette.background-grey;
 
             // circle
             circle := Rectangle {  
@@ -39,21 +39,21 @@ export CheckBox := Rectangle {
                 y: 2px;
                 width: 27px;
                 height: 27px;
-                background: osi.palette.white;
+                background: cupertino.palette.white;
                 border-radius: height / 2;
                 drop-shadow-blur: 2px;
                 drop-shadow-offset-y: 2px;
-                drop-shadow-color: osi.palette.shadow;
+                drop-shadow-color: cupertino.palette.shadow;
             }   
         }
 
         label := Text {
-            color: osi.palette.text;
+            color: cupertino.palette.text;
             horizontal-alignment: left;
             vertical-alignment: center;
             vertical-stretch: 1;
-            font-size: osi.typo.default.font-size;
-            font-weight: osi.typo.default.font-weight;
+            font-size: cupertino.typo.default.font-size;
+            font-weight: cupertino.typo.default.font-weight;
         }
     }
 
@@ -85,14 +85,14 @@ export CheckBox := Rectangle {
 
     states [
         disabled when !root.enabled && !root.checked: {
-            opacity: osi.opacity-disabled;
+            opacity: cupertino.opacity-disabled;
             circle.drop-shadow-color: transparent;
             circle.drop-shadow-blur: 0px;
             circle.drop-shadow-offset-y: 0px;
          }
         disabled-checked when !root.enabled && root.checked: {
             circle.x: switch.width - circle.width - 2px;
-            opacity: osi.opacity-disabled;
+            opacity: cupertino.opacity-disabled;
             circle.drop-shadow-color: transparent;
             circle.drop-shadow-blur: 0px;
             circle.drop-shadow-offset-y: 0px;
@@ -101,30 +101,30 @@ export CheckBox := Rectangle {
             circle.width: 35px;
 
             in {
-                animate circle.width { duration: osi.durations.fast; }
+                animate circle.width { duration: cupertino.durations.fast; }
             }
         }
         pressed-checked when root.checked && touch.pressed: {
             circle.width: 35px;
             circle.x: switch.width - circle.width - 2px;
-            switch.background: osi.palette.default;
+            switch.background: cupertino.palette.default;
 
             in {
-                animate circle.width { duration: osi.durations.fast; }
+                animate circle.width { duration: cupertino.durations.fast; }
             }
 
             out {
-                animate circle.x { duration: osi.durations.fast; }
-                animate switch.background { duration: osi.durations.fast; }
+                animate circle.x { duration: cupertino.durations.fast; }
+                animate switch.background { duration: cupertino.durations.fast; }
             }
         }
         checked when root.checked: {
             circle.x: switch.width - circle.width - 2px;
-            switch.background: osi.palette.default;
+            switch.background: cupertino.palette.default;
          
             in {
-                animate circle.x { duration: osi.durations.fast; }
-                animate switch.background { duration: osi.durations.fast; }
+                animate circle.x { duration: cupertino.durations.fast; }
+                animate switch.background { duration: cupertino.durations.fast; }
             }
         }
     ]
