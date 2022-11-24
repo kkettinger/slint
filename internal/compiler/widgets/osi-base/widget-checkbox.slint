@@ -9,10 +9,10 @@ import { osi } from "osi.slint";
 export CheckBox := Rectangle {
     callback toggled;
 
-    property <string> text <=> label.text;
-    property <bool> checked;
-    property <bool> has-focus: fs.has-focus;
-    property<bool> enabled: true;
+    in property <string> text <=> label.text;
+    in-out property <bool> checked;
+    out property <bool> has-focus: fs.has-focus;
+    in property<bool> enabled: true;
 
     height: 31px;
 
