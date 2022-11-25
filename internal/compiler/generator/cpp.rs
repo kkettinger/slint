@@ -1786,6 +1786,15 @@ fn generate_global(file: &mut File, global: &llr::GlobalComponent, root: &llr::P
         }
     }
 
+    for (prop1, prop2) in &global.two_way_bindings {
+        init.push(format!(
+            "slint::private_api::Property<{ty}>::link_two_way(&{p1}, &{p2});",
+            ty = ctx.property_ty(prop1).cpp_type().unwrap(),
+            p1 = access_member(prop1, &ctx),
+            p2 = access_member(prop2, &ctx),
+        ));
+    }
+
     let root_ptr_type = format!("const {} *", ident(&root.item_tree.root.name));
     global_struct.members.push((
         Access::Public,
