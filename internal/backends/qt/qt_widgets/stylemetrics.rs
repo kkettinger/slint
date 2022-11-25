@@ -45,6 +45,8 @@ pub struct NativeStyleMetrics {
     pub placeholder_color_disabled: Property<Color>,
 
     pub dark_color_scheme: Property<bool>,
+    pub dark_switch: Property<bool>,
+
 
     // Tab Bar metrics:
     pub tab_bar_alignment: Property<LayoutAlignment>,
@@ -74,6 +76,7 @@ impl NativeStyleMetrics {
             placeholder_color: Default::default(),
             placeholder_color_disabled: Default::default(),
             dark_color_scheme: Default::default(),
+            dark_switch: Default::default(),
             tab_bar_alignment: Default::default(),
             style_change_listener: core::cell::Cell::new(core::ptr::null()),
         })

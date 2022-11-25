@@ -10,6 +10,7 @@ export Page := VerticalBox {
     property<string> description: "description";
 
     HorizontalLayout {  
+        spacing: 8px;
         height: 24px;
         Text {  
             font-size: 20px;
@@ -20,6 +21,7 @@ export Page := VerticalBox {
         Rectangle {}
 
         CheckBox { 
+            visible: StyleMetrics.dark-switch;
             horizontal-stretch: 0;
             text: "Dark color scheme";
             checked <=> StyleMetrics.dark-color-scheme;

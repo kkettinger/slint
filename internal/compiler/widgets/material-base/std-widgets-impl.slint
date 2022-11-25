@@ -19,7 +19,8 @@ export global StyleMetrics := {
     property<color> textedit-text-color: md.sys.color.on-surface;
     property<brush> textedit-background-disabled: transparent;
     property<color> textedit-text-color-disabled: md.sys.color.on-surface;
-    property<bool> dark-color-scheme: md.dark-color-scheme;
+    in-out property<bool> dark-color-scheme <=> md.dark-color-scheme;
+    in-out property <bool> dark-switch: true;
 
     property <string> default-font-family: "Roboto";
 
