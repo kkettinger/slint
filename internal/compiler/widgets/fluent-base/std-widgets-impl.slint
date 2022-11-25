@@ -4,7 +4,7 @@
 import { ColorSchemeSelector } from "color-scheme.slint";
 
 export global Palette := {
-    property<bool> dark-color-scheme <=> StyleMetrics.dark-color-scheme;
+    property<bool> dark-color-scheme: ColorSchemeSelector.dark-color-scheme;
 
     // The colors in light mode are default palette. In the
     // Fluent UI Theme Designer they match the colors produced
@@ -77,7 +77,7 @@ export global StyleMetrics := {
     property<color> textedit-text-color: Palette.neutralPrimary;
     property<brush> textedit-background-disabled: Palette.neutralLighter;
     property<color> textedit-text-color-disabled: Palette.neutralTertiary;
-    property<bool> dark-color-scheme: ColorSchemeSelector.dark-color-scheme;
+    property<bool> dark-color-scheme: Palette.dark-color-scheme;
 }
 
 export Button := Rectangle {
