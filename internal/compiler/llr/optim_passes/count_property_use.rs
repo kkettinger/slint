@@ -19,6 +19,11 @@ pub fn count_property_use(root: &PublicComponent) {
         for p in g.public_properties.iter() {
             visit_property(&p.prop, &ctx);
         }
+
+        for (a, b) in &g.two_way_bindings {
+            visit_property(a, &ctx);
+            visit_property(b, &ctx);
+        }
     }
 
     root.for_each_sub_components(&mut |sc, ctx| {
