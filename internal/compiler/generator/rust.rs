@@ -1087,6 +1087,14 @@ fn generate_global(global: &llr::GlobalComponent, root: &llr::PublicComponent) -
         }
     }
 
+    for (prop1, prop2) in &global.two_way_bindings {
+        let p1 = access_member(prop1, &ctx);
+        let p2 = access_member(prop2, &ctx);
+        init.push(quote!(
+            Property::link_two_way(#p1, #p2);
+        ));
+    }
+
     let public_interface = global.exported.then(|| {
         let property_and_callback_accessors = public_api(&global.public_properties, quote!(self.0.as_ref()), &ctx);
         let public_component_id = ident(&global.name);
