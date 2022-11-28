@@ -1,7 +1,7 @@
 // Copyright © SixtyFPS GmbH <info@slint-ui.com>
 // SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-Slint-commercial
 
-import { CheckBox, GridBox, ListView, ScrollView, VerticalBox } from "std-widgets.slint";
+import { CheckBox, GridBox, ListView, ScrollView, VerticalBox, StyleMetrics } from "std-widgets.slint";
 
 import { GallerySettings } from "../gallery_settings.slint";
 
@@ -11,6 +11,7 @@ export Page := VerticalBox {
 
     HorizontalLayout {  
         height: 24px;
+        spacing: 4px;
         Text {  
             font-size: 20px;
             text <=> root.title;
@@ -18,6 +19,12 @@ export Page := VerticalBox {
 
         // Spacer
         Rectangle {}
+
+        CheckBox {  
+            horizontal-stretch: 0;
+            text: "Dark theme";
+            checked <=> StyleMetrics.dark-color-scheme;
+        }
 
         CheckBox { 
             horizontal-stretch: 0;
