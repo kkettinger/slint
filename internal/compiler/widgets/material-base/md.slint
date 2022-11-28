@@ -51,28 +51,32 @@ struct Sys := {
     typescale: Typescale
 }
 
-// Material Desigin v3 style defintions.
-export global md := {
+export global Palette := {
     property<bool> dark-color-scheme: ColorSchemeSelector.dark-color-scheme;
 
+    property <Color> color: {
+        background: !dark-color-scheme ? #FFFBFE : #1C1B1F,
+        surface: !dark-color-scheme ? #FFFBFE : #1C1B1F,
+        surface-variant: !dark-color-scheme ? #E7E0EC.darker(0.2) : #49454F,
+        on-surface: !dark-color-scheme ? #1C1B1F : #E6E1E5,
+        on-surface-variant: !dark-color-scheme ? #49454E : #CAC4D0,
+        surface-tint: !dark-color-scheme ? #6750A4 : #D0BCFF,
+        primary: !dark-color-scheme ? #6750A4 : #D0BCFF,
+        primary-ripple: !dark-color-scheme ? #D0BCFF : #6750A4,
+        on-primary: !dark-color-scheme ? #FFFFFF : #371E73,
+        shadow: #000000,
+        outline: !dark-color-scheme ? #79747E : #938F99,
+        outline-variant: !dark-color-scheme ? #C4C7C5 : #444746,
+        secondary-container:  !dark-color-scheme ? #E8DEF8 : #4A4458,
+        on-secondary-container:  !dark-color-scheme ? #1E192B : #E8DEF8,
+        secondary-ripple: !dark-color-scheme ? #fffc : #000000,
+    };
+}
+
+// Material Desigin v3 style defintions.
+export global md := {
     property<Sys> sys: {
-        color: {
-            background: !dark-color-scheme ? #FFFBFE : #1C1B1F,
-            surface: !dark-color-scheme ? #FFFBFE : #1C1B1F,
-            surface-variant: !dark-color-scheme ? #E7E0EC.darker(0.2) : #49454F,
-            on-surface: !dark-color-scheme ? #1C1B1F : #E6E1E5,
-            on-surface-variant: !dark-color-scheme ? #49454E : #CAC4D0,
-            surface-tint: !dark-color-scheme ? #6750A4 : #D0BCFF,
-            primary: !dark-color-scheme ? #6750A4 : #D0BCFF,
-            primary-ripple: !dark-color-scheme ? #D0BCFF : #6750A4,
-            on-primary: !dark-color-scheme ? #FFFFFF : #371E73,
-            shadow: #000000,
-            outline: !dark-color-scheme ? #79747E : #938F99,
-            outline-variant: !dark-color-scheme ? #C4C7C5 : #444746,
-            secondary-container:  !dark-color-scheme ? #E8DEF8 : #4A4458,
-            on-secondary-container:  !dark-color-scheme ? #1E192B : #E8DEF8,
-            secondary-ripple: !dark-color-scheme ? #fffc : #000000,
-        },
+        color: Palette.color,
 
         elevation: {
             level0: 0px,

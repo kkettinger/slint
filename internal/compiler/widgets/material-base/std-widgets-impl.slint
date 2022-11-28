@@ -5,7 +5,7 @@
 import { Button } from "widget-button.slint";
 import { CheckBox } from "widget-checkbox.slint";
 import { ScrollView } from "widget-scrollview.slint";
-import { md } from "md.slint";
+import { md, Palette } from "md.slint";
 
 export { Button, CheckBox, ScrollView }
 
@@ -19,7 +19,7 @@ export global StyleMetrics := {
     property<color> textedit-text-color: md.sys.color.on-surface;
     property<brush> textedit-background-disabled: transparent;
     property<color> textedit-text-color-disabled: md.sys.color.on-surface;
-    property<bool> dark-color-scheme: md.dark-color-scheme;
+    property<bool> dark-color-scheme <=> Palette.dark-color-scheme;
 
     property <string> default-font-family: "Roboto";
 
