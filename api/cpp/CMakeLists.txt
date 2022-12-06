@@ -400,5 +400,3 @@ endif()
 #     target_link_libraries(test_eventloop PRIVATE Threads::Threads)
 #     slint_test(models)
 # endif()
-#
-    slint_test(window)

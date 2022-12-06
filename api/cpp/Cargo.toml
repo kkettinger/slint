@@ -36,7 +36,7 @@ crate-type = ["staticlib"]
 #
 
 [dependencies]
-i-slint-core = { version = "=0.3.1", path="../../internal/core", default-features = false, features = ["ffi", "unsafe-single-threaded"] }
+i-slint-core = { version = "=0.3.3", path="../../internal/core", default-features = false, features = ["ffi", "unsafe-single-threaded"] }
 mcu-board-support = {path="../../examples/mcu-board-support",features=["pico-st7789"]}
 
 
