@@ -55,9 +55,8 @@ export component Menu {
                 alignment: start;
 
                 i-menu-button := MenuButton {
-
                     clicked => {
-                        toggle-open();
+                        hide();
                     }
                 }
             }
@@ -70,19 +69,8 @@ export component Menu {
         menu-button-visible = false;
     }
 
-    public function show-button() {
-        menu-button-visible = true;
-    }
-
-    function toggle-open() {
-        menu-button-visible = false;
-        open = !open;
-
-        if(open) {
-            opend();
-        } else {
-            closed();
-        }
+    public function open-menu() {
+        open = true;
     }
 
     public function hide() {
