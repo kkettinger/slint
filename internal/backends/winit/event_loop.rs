@@ -64,9 +64,23 @@ struct NotRunningEventLoop {
     event_loop_proxy: winit::event_loop::EventLoopProxy<CustomEvent>,
 }
 
+#[cfg(target_os = "android")]
+pub(crate) static ANDROID_APP: once_cell::sync::OnceCell<
+    winit::platform::android::activity::AndroidApp,
+> = once_cell::sync::OnceCell::new();
+
 impl NotRunningEventLoop {
     fn new() -> Self {
-        let instance = winit::event_loop::EventLoopBuilder::with_user_event().build();
+        #[allow(unused_mut)]
+        let mut builder = winit::event_loop::EventLoopBuilder::with_user_event();
+        #[cfg(target_os = "android")]
+        {
+            use winit::platform::android::EventLoopBuilderExtAndroid;
+            builder.with_android_app(
+                ANDROID_APP.get().expect("android must be initialized with android_init").clone(),
+            );
+        }
+        let instance = builder.build();
         let event_loop_proxy = instance.create_proxy();
         let clipboard = RefCell::new(create_clipboard(&instance));
         Self { clipboard, instance, event_loop_proxy }
@@ -468,7 +482,7 @@ pub fn run() -> Result<(), corelib::platform::PlatformError> {
     use winit::event_loop::{ControlFlow, EventLoopWindowTarget};
 
     let not_running_loop_instance = MAYBE_LOOP_INSTANCE.with(|loop_instance| {
-        loop_instance.borrow_mut().take().unwrap_or_else(NotRunningEventLoop::new)
+        loop_instance.borrow_mut().take().unwrap_or_else(|| NotRunningEventLoop::new())
     });
 
     let event_loop_proxy = not_running_loop_instance.event_loop_proxy;
