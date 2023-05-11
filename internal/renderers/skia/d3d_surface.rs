@@ -292,7 +292,7 @@ impl super::Surface for D3DSurface {
         window: &dyn raw_window_handle::HasRawWindowHandle,
         _display: &dyn raw_window_handle::HasRawDisplayHandle,
         size: PhysicalWindowSize,
-    ) -> Result<Self, i_slint_core::platform::PlatformError> {
+    ) -> Result<Box<dyn super::Surface>, i_slint_core::platform::PlatformError> {
         let factory_flags = 0;
         /*
         let factory_flags = dxgi1_3::DXGI_CREATE_FACTORY_DEBUG;
@@ -415,7 +415,7 @@ impl super::Surface for D3DSurface {
         let swap_chain =
             RefCell::new(SwapChain::new(queue, &device, gr_context, &window, size, &dxgi_factory)?);
 
-        Ok(Self { swap_chain })
+        Ok(Box::new(Self { swap_chain }))
     }
 
     fn name(&self) -> &'static str {

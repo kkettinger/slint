@@ -23,7 +23,7 @@ impl super::Surface for MetalSurface {
         window: &dyn raw_window_handle::HasRawWindowHandle,
         _display: &dyn raw_window_handle::HasRawDisplayHandle,
         size: PhysicalWindowSize,
-    ) -> Result<Self, i_slint_core::platform::PlatformError> {
+    ) -> Result<Box<dyn super::Surface>, i_slint_core::platform::PlatformError> {
         let device = metal::Device::system_default()
             .ok_or_else(|| format!("Skia Renderer: No metal device found"))?;
 
@@ -60,7 +60,7 @@ impl super::Surface for MetalSurface {
 
         let gr_context = skia_safe::gpu::DirectContext::new_metal(&backend, None).unwrap().into();
 
-        Ok(Self { command_queue, layer, gr_context })
+        Ok(Box::new(Self { command_queue, layer, gr_context }))
     }
 
     fn name(&self) -> &'static str {

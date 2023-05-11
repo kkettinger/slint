@@ -36,17 +36,29 @@ mod metal_surface;
 #[cfg(target_family = "windows")]
 mod d3d_surface;
 
+#[cfg(skia_backend_opengl)]
+mod opengl_surface;
+
 cfg_if::cfg_if! {
     if #[cfg(skia_backend_vulkan)] {
         mod vulkan_surface;
         type DefaultSurface = vulkan_surface::VulkanSurface;
     } else if #[cfg(skia_backend_opengl)] {
-        mod opengl_surface;
         type DefaultSurface = opengl_surface::OpenGLSurface;
     } else if #[cfg(skia_backend_metal)] {
         type DefaultSurface = metal_surface::MetalSurface;
     } else if #[cfg(skia_backend_d3d)] {
         type DefaultSurface = d3d_surface::D3DSurface;
+    }
+}
+
+cfg_if::cfg_if! {
+    if #[cfg(target_os = "macos")] {
+        type FallbackSurface = metal_surface::MetalSurface;
+    } else if #[cfg(target_family = "windows")] {
+        type FallbackSurface = d3d_surface::D3DSurface;
+    } else {
+        type FallbackSurface = opengl_surface::OpenGLSurface;
     }
 }
 
@@ -69,7 +81,8 @@ impl SkiaRenderer {
         native_display: &impl raw_window_handle::HasRawDisplayHandle,
         size: PhysicalWindowSize,
     ) -> Result<Self, PlatformError> {
-        let surface = DefaultSurface::new(&native_window, &native_display, size)?;
+        let surface = DefaultSurface::new(&native_window, &native_display, size)
+            .or_else(|_| FallbackSurface::new(&native_window, &native_display, size))?;
 
         Ok(Self {
             window_adapter_weak,
@@ -77,7 +90,7 @@ impl SkiaRenderer {
             image_cache: Default::default(),
             path_cache: Default::default(),
             rendering_metrics_collector: Default::default(),
-            surface: Box::new(surface),
+            surface,
         })
     }
 
@@ -94,7 +107,7 @@ impl SkiaRenderer {
 
         if let Some(callback) = self.rendering_notifier.borrow_mut().as_mut() {
             self.surface
-                .with_graphics_api(&|api| callback.notify(RenderingState::RenderingSetup, &api))
+                .with_graphics_api(&mut |api| callback.notify(RenderingState::RenderingSetup, &api))
         }
 
         Ok(())
@@ -104,7 +117,7 @@ impl SkiaRenderer {
     pub fn hide(&self) -> Result<(), i_slint_core::platform::PlatformError> {
         self.surface.with_active_surface(&|| {
             if let Some(callback) = self.rendering_notifier.borrow_mut().as_mut() {
-                self.surface.with_graphics_api(&|api| {
+                self.surface.with_graphics_api(&mut |api| {
                     callback.notify(RenderingState::RenderingTeardown, &api)
                 })
             }
@@ -136,7 +149,7 @@ impl SkiaRenderer {
                     // Skia's clear() will merely schedule a clear call, so flush right away to make it immediate.
                     gr_context.flush(None);
 
-                    self.surface.with_graphics_api(&|api| {
+                    self.surface.with_graphics_api(&mut |api| {
                         callback.notify(RenderingState::BeforeRendering, &api)
                     })
                 }
@@ -183,8 +196,9 @@ impl SkiaRenderer {
             });
 
             if let Some(callback) = self.rendering_notifier.borrow_mut().as_mut() {
-                self.surface
-                    .with_graphics_api(&|api| callback.notify(RenderingState::AfterRendering, &api))
+                self.surface.with_graphics_api(&mut |api| {
+                    callback.notify(RenderingState::AfterRendering, &api)
+                })
             }
         })
     }
@@ -376,14 +390,14 @@ trait Surface {
         window: &dyn raw_window_handle::HasRawWindowHandle,
         display: &dyn raw_window_handle::HasRawDisplayHandle,
         size: PhysicalWindowSize,
-    ) -> Result<Self, PlatformError>
+    ) -> Result<Box<dyn Surface>, PlatformError>
     where
         Self: Sized;
     fn name(&self) -> &'static str;
     fn supports_graphics_api(&self) -> bool {
         false
     }
-    fn with_graphics_api(&self, _callback: &dyn FnMut(GraphicsAPI<'_>)) {}
+    fn with_graphics_api(&self, _callback: &mut dyn FnMut(GraphicsAPI<'_>)) {}
     fn with_active_surface(
         &self,
         callback: &dyn Fn(),

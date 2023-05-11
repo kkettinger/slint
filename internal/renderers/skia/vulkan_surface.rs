@@ -35,7 +35,7 @@ impl super::Surface for VulkanSurface {
         window: &dyn raw_window_handle::HasRawWindowHandle,
         display: &dyn raw_window_handle::HasRawDisplayHandle,
         size: PhysicalWindowSize,
-    ) -> Result<Self, i_slint_core::platform::PlatformError> {
+    ) -> Result<Box<dyn super::Surface>, i_slint_core::platform::PlatformError> {
         let library = VulkanLibrary::new()
             .map_err(|load_err| format!("Error loading vulkan library: {load_err}"))?;
 
@@ -184,7 +184,7 @@ impl super::Surface for VulkanSurface {
 
         let previous_frame_end = RefCell::new(Some(sync::now(device.clone()).boxed()));
 
-        Ok(Self {
+        Ok(Box::new(Self {
             gr_context: RefCell::new(gr_context),
             recreate_swapchain: Cell::new(false),
             device,
@@ -193,7 +193,7 @@ impl super::Surface for VulkanSurface {
             swapchain: RefCell::new(swapchain),
             swapchain_images: RefCell::new(swapchain_images),
             swapchain_image_views: RefCell::new(swapchain_image_views),
-        })
+        }))
     }
 
     fn name(&self) -> &'static str {

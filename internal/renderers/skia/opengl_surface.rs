@@ -26,7 +26,7 @@ impl super::Surface for OpenGLSurface {
         window: &dyn raw_window_handle::HasRawWindowHandle,
         display: &dyn raw_window_handle::HasRawDisplayHandle,
         size: PhysicalWindowSize,
-    ) -> Result<Self, PlatformError> {
+    ) -> Result<Box<dyn super::Surface>, PlatformError> {
         let width: std::num::NonZeroU32 = size.width.try_into().map_err(|_| {
             format!("Attempting to create window surface with an invalid width: {}", size.width)
         })?;
@@ -82,13 +82,13 @@ impl super::Surface for OpenGLSurface {
         )?
         .into();
 
-        Ok(Self {
+        Ok(Box::new(Self {
             fb_info,
             surface,
             gr_context: RefCell::new(gr_context),
             glutin_context: current_glutin_context,
             glutin_surface,
-        })
+        }))
     }
 
     fn name(&self) -> &'static str {
@@ -99,7 +99,7 @@ impl super::Surface for OpenGLSurface {
         true
     }
 
-    fn with_graphics_api(&self, callback: impl FnOnce(GraphicsAPI<'_>)) {
+    fn with_graphics_api(&self, callback: &mut dyn FnMut(GraphicsAPI<'_>)) {
         let api = GraphicsAPI::NativeOpenGL {
             get_proc_address: &|name| {
                 self.glutin_context.display().get_proc_address(name) as *const _
@@ -108,7 +108,7 @@ impl super::Surface for OpenGLSurface {
         callback(api)
     }
 
-    fn with_active_surface(&self, callback: impl FnOnce()) -> Result<(), PlatformError> {
+    fn with_active_surface(&self, callback: &dyn Fn()) -> Result<(), PlatformError> {
         self.ensure_context_current()?;
         callback();
         Ok(())
