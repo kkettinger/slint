@@ -22,8 +22,6 @@ pub struct OpenGLSurface {
 }
 
 impl super::Surface for OpenGLSurface {
-    const SUPPORTS_GRAPHICS_API: bool = true;
-
     fn new(
         window: &dyn raw_window_handle::HasRawWindowHandle,
         display: &dyn raw_window_handle::HasRawDisplayHandle,
@@ -97,6 +95,10 @@ impl super::Surface for OpenGLSurface {
         "opengl"
     }
 
+    fn supports_graphics_api(&self) -> bool {
+        true
+    }
+
     fn with_graphics_api(&self, callback: impl FnOnce(GraphicsAPI<'_>)) {
         let api = GraphicsAPI::NativeOpenGL {
             get_proc_address: &|name| {
@@ -115,7 +117,7 @@ impl super::Surface for OpenGLSurface {
     fn render(
         &self,
         size: PhysicalWindowSize,
-        callback: impl FnOnce(&mut skia_safe::Canvas, &mut skia_safe::gpu::DirectContext),
+        callback: &dyn Fn(&mut skia_safe::Canvas, &mut skia_safe::gpu::DirectContext),
     ) -> Result<(), PlatformError> {
         self.ensure_context_current()?;
 
