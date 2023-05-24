@@ -7,6 +7,7 @@
 use std::cell::RefCell;
 use std::rc::Rc;
 
+use cosmic_text::{FontSystem, SwashCache, Buffer, Attrs};
 use i_slint_core::api::{
     GraphicsAPI, PhysicalSize as PhysicalWindowSize, RenderingNotifier, RenderingState,
     SetRenderingNotifierError,
@@ -51,6 +52,38 @@ cfg_if::cfg_if! {
     }
 }
 
+pub struct FontProcessor {
+    font_system: FontSystem,
+    swash_cache: SwashCache
+}
+
+impl FontProcessor {
+    pub fn draw_text(&mut self, text: &str, font_size: f32, width: f32, height: f32) {
+        let metrics = Metrics::new(font_size, 20.0);
+        let mut buffer = Buffer::new(&mut self.font_system, metrics);
+        let mut buffer = buffer.borrow_with(&mut font_system);
+        buffer.set_size(width, height);
+        buffer.set_text(text, Attrs::new());
+
+        buffer.shape_until_scroll();
+
+        for run in buffer.layout_runs() {
+            for glyph in run.glyphs.iter() {
+                println!("{:#?}", glyph);
+            }
+        }
+    }
+}
+
+impl Default for FontProcessor {
+    fn default() -> Self {
+        Self {
+            font_system: FontSystem::new(),
+            swash_cache: SwashCache::new(),
+        }
+    }
+}
+
 /// Use the SkiaRenderer when implementing a custom Slint platform where you deliver events to
 /// Slint and want the scene to be rendered using Skia as underlying graphics library.
 pub struct SkiaRenderer {
@@ -59,6 +92,7 @@ pub struct SkiaRenderer {
     path_cache: ItemCache<Option<(Vector2D<f32, PhysicalPx>, skia_safe::Path)>>,
     rendering_metrics_collector: RefCell<Option<Rc<RenderingMetricsCollector>>>,
     surface: DefaultSurface,
+    font_processor: FontProcessor
 }
 
 impl SkiaRenderer {
@@ -76,6 +110,7 @@ impl SkiaRenderer {
             path_cache: Default::default(),
             rendering_metrics_collector: Default::default(),
             surface,
+            font_processor: FontProcessor::default()
         })
     }
 

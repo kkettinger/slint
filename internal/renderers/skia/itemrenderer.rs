@@ -483,6 +483,8 @@ impl<'a> ItemRenderer for SkiaRenderer<'a> {
         );
 
         layout.paint(&mut self.canvas, to_skia_point(layout_top_left));
+
+        self.f
     }
 
     fn draw_text_input(
