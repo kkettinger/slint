@@ -5,11 +5,11 @@ use std::cell::RefCell;
 
 pub use fontdb;
 
-#[derive(derive_more::Deref, derive_more::DerefMut)]
 pub struct FontDatabase {
-    #[deref]
-    #[deref_mut]
+    #[cfg(not(feature = "cosmic-text"))]
     db: fontdb::Database,
+    #[cfg(feature = "cosmic-text")]
+    pub font_system: cosmic_text::FontSystem,
     #[cfg(not(any(
         target_family = "windows",
         target_os = "macos",
@@ -17,6 +17,36 @@ pub struct FontDatabase {
         target_arch = "wasm32"
     )))]
     pub fontconfig_fallback_families: Vec<String>,
+}
+
+#[cfg(not(feature = "cosmic-text"))]
+impl core::ops::Deref for FontDatabase {
+    type Target = fontdb::Database;
+    fn deref(&self) -> &Self::Target {
+        &self.db
+    }
+}
+
+#[cfg(not(feature = "cosmic-text"))]
+impl core::ops::DerefMut for FontDatabase {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.db
+    }
+}
+
+#[cfg(feature = "cosmic-text")]
+impl core::ops::Deref for FontDatabase {
+    type Target = fontdb::Database;
+    fn deref(&self) -> &Self::Target {
+        self.font_system.db()
+    }
+}
+
+#[cfg(feature = "cosmic-text")]
+impl core::ops::DerefMut for FontDatabase {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        self.font_system.db_mut()
+    }
 }
 
 thread_local! {
@@ -72,8 +102,17 @@ fn init_fontdb() -> FontDatabase {
         font_db.set_sans_serif_family(default_sans_serif_family);
     }
 
+    #[cfg(feature = "cosmic-text")]
+    let font_system = cosmic_text::FontSystem::new_with_locale_and_db(
+        sys_locale::get_locale().unwrap_or_else(|| String::from("en-US")),
+        font_db,
+    );
+
     FontDatabase {
+        #[cfg(not(feature = "cosmic-text"))]
         db: font_db,
+        #[cfg(feature = "cosmic-text")]
+        font_system,
         #[cfg(not(any(
             target_family = "windows",
             target_os = "macos",
