@@ -1,4 +1,9 @@
-const { sum }  = require('slint-ui');
+import { run } from 'slint-ui';
 
-console.log("Test slint-ui with napi-rs")
-console.log(sum(10, 4));
+import * as fs from 'fs';
+const fileName = "window.slint";
+const fileData = fs.readFileSync(fileName, "utf8");
+
+console.log(fileData);
+
+run(fileData)
