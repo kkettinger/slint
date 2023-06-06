@@ -20,6 +20,9 @@ export class ComponentCompiler {
   buildFromSource(sourceCode: string, path: string): JsComponentDefinition | null
 }
 export type JsComponentDefinition = ComponentDefinition
-export class ComponentDefinition { }
+export class ComponentDefinition {
+  constructor()
+  name(): string
+}
 export type JsDiagnostic = Diagnostic
 export class Diagnostic { }

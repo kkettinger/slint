@@ -15,4 +15,13 @@ impl From<ComponentDefinition> for JsComponentDefinition {
 
 #[napi]
 impl JsComponentDefinition {
+    #[napi(constructor)]
+    pub fn new() -> Self {
+        unreachable!("ComponentDefinition can only be created by using ComponentCompiler.")
+    }
+
+    #[napi]
+    pub fn name(&self) -> String {
+        self.internal.name().into()
+    }
 }
