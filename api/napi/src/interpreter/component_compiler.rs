@@ -1,5 +1,7 @@
 use std::path::PathBuf;
 
+use super::JsComponentDefinition;
+use super::JsDiagnostic;
 use slint_interpreter::ComponentCompiler;
 
 #[napi(js_name = "ComponentCompiler")]
@@ -36,5 +38,27 @@ impl JsComponentCompiler {
     #[napi]
     pub fn style(&self) -> Option<String> {
         self.internal.style().cloned()
+    }
+
+    // todo: set_file_loader
+
+    #[napi]
+    pub fn diagnostics(&self) -> Vec<JsDiagnostic> {
+        self.internal.diagnostics().iter().map(|d| JsDiagnostic::from(d.clone())).collect()
+    }
+
+    #[napi]
+    pub fn build_from_path(&mut self, path: String) -> Option<JsComponentDefinition> {
+        spin_on::spin_on(self.internal.build_from_path(PathBuf::from(path))).map(|d| d.into())
+    }
+
+    #[napi]
+    pub fn build_from_source(
+        &mut self,
+        source_code: String,
+        path: String,
+    ) -> Option<JsComponentDefinition> {
+        spin_on::spin_on(self.internal.build_from_source(source_code, PathBuf::from(path)))
+            .map(|d| d.into())
     }
 }
