@@ -11,18 +11,23 @@ export function run(code: string): void
 export type JsComponentCompiler = ComponentCompiler
 export class ComponentCompiler {
   constructor()
-  setIncludePaths(includePaths: Array<string>): void
-  includePaths(): Array<string>
-  setStyle(style: string): void
-  style(): string | null
-  diagnostics(): Array<JsDiagnostic>
+  set includePaths(includePaths: Array<string>)
+  get includePaths(): Array<string>
+  set style(style: string)
+  get style(): string | null
+  get diagnostics(): Array<JsDiagnostic>
   buildFromPath(path: string): JsComponentDefinition | null
   buildFromSource(sourceCode: string, path: string): JsComponentDefinition | null
 }
 export type JsComponentDefinition = ComponentDefinition
 export class ComponentDefinition {
   constructor()
-  name(): string
+  get name(): string
+  create(): JsComponentInstance | null
+}
+export class JsComponentInstance {
+  constructor()
+  run(): void
 }
 export type JsDiagnostic = Diagnostic
 export class Diagnostic { }

@@ -16,12 +16,12 @@ impl JsComponentCompiler {
         Self { internal: ComponentCompiler::default() }
     }
 
-    #[napi]
+    #[napi(setter)]
     pub fn set_include_paths(&mut self, include_paths: Vec<String>) {
         self.internal.set_include_paths(include_paths.iter().map(|p| PathBuf::from(p)).collect());
     }
 
-    #[napi]
+    #[napi(getter)]
     pub fn include_paths(&self) -> Vec<String> {
         self.internal
             .include_paths()
@@ -30,19 +30,19 @@ impl JsComponentCompiler {
             .collect()
     }
 
-    #[napi]
+    #[napi(setter)]
     pub fn set_style(&mut self, style: String) {
         self.internal.set_style(style);
     }
 
-    #[napi]
+    #[napi(getter)]
     pub fn style(&self) -> Option<String> {
         self.internal.style().cloned()
     }
 
     // todo: set_file_loader
 
-    #[napi]
+    #[napi(getter)]
     pub fn diagnostics(&self) -> Vec<JsDiagnostic> {
         self.internal.diagnostics().iter().map(|d| JsDiagnostic::from(d.clone())).collect()
     }
