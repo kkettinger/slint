@@ -4,6 +4,9 @@ use slint_interpreter::{
     ComponentCompiler, ComponentDefinition, ComponentHandle, SharedString, Value,
 };
 
+mod interpreter;
+pub use interpreter::*;
+
 #[macro_use]
 extern crate napi_derive;
 

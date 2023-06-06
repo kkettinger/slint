@@ -252,6 +252,7 @@ if (!nativeBinding) {
   throw new Error(`Failed to load native binding`)
 }
 
-const { run } = nativeBinding
+const { ComponentCompiler, run } = nativeBinding
 
+module.exports.ComponentCompiler = ComponentCompiler
 module.exports.run = run
