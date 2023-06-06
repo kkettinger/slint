@@ -1,14 +1,18 @@
-import { Instance } from 'slint-ui';
+import { ComponentCompiler } from 'slint-ui';
 
-import * as fs from 'fs';
-const fileName = "window.slint";
-const fileData = fs.readFileSync(fileName, "utf8");
+var componentCompiler = new ComponentCompiler();
+componentCompiler.setStyle("fluent");
+console.log(componentCompiler.style());
 
-console.log(fileData);
+// import * as fs from 'fs';
+// const fileName = "window.slint";
+// const fileData = fs.readFileSync(fileName, "utf8");
 
-// run(fileData).run();
+// console.log(fileData);
 
-var instance = new Instance(fileData);
-instance.run();
+// // run(fileData).run();
 
-// console.log(run(fileData))
+// var instance = new Instance(fileData);
+// instance.run();
+
+// // console.log(run(fileData))
