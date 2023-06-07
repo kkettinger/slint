@@ -7,12 +7,11 @@ This module contains types that are public and re-exported in the slint-rs as we
 
 #![warn(missing_docs)]
 
-use alloc::boxed::Box;
-use alloc::string::String;
-
 use crate::component::ComponentVTable;
 use crate::input::{KeyEventType, KeyInputEvent, MouseEvent};
 use crate::window::{WindowAdapter, WindowInner};
+use alloc::boxed::Box;
+use alloc::string::String;
 
 /// A position represented in the coordinate space of logical pixels. That is the space before applying
 /// a display device specific scale factor.
@@ -757,6 +756,85 @@ pub fn quit_event_loop() -> Result<(), EventLoopError> {
     crate::platform::event_loop_proxy()
         .ok_or(EventLoopError::NoEventLoopProvider)?
         .quit_event_loop()
+}
+
+/// Spawn a Future to run in the Slint event loop
+///
+/// Since the future isn't sent, this function must only be run on the main Slint thread that runs the event loop.
+/// And the event loop must have been initialized to be able to call this function.
+/// If you have a `Sent` future that you want to spawn form an other thread, call this function from a closure to
+/// to [`invoke_from_event_loop`]
+///
+/// # Example
+
+/// /// ```rust
+/// # i_slint_backend_testing::init();
+/// slint::spawn_future(async {
+///     // code here that can await
+/// }).unwrap();
+#[cfg(target_has_atomic = "ptr")] // Arc is not available. TODO: implement using RawWarker
+pub fn spawn_future(
+    fut: impl core::future::Future<Output = ()> + 'static,
+) -> Result<(), EventLoopError> {
+    use alloc::task::Wake;
+    use core::cell::RefCell;
+
+    // make sure we are in the backend's thead
+    if crate::platform::PLATFORM_INSTANCE.with(|p| p.get().is_none()) {
+        return Err(EventLoopError::NoEventLoopProvider);
+    }
+
+    struct FutureRunner {
+        fut: RefCell<Option<core::pin::Pin<Box<dyn core::future::Future<Output = ()>>>>>,
+        #[cfg(feature = "std")]
+        thread: std::thread::ThreadId,
+    }
+
+    // Safety: the future is only going to be run in the UI thread
+    #[allow(unsafe_code)]
+    {
+        unsafe impl Send for FutureRunner {}
+        unsafe impl Sync for FutureRunner {}
+    };
+
+    impl Wake for FutureRunner {
+        fn wake(self: alloc::sync::Arc<Self>) {
+            invoke_from_event_loop(move || {
+                #[cfg(feature = "std")]
+                assert_eq!(self.thread, std::thread::current().id(), "the future was moved to a thread despite we checked it was created in the event loop thread");
+                let waker = self.clone().into();
+                let mut fut_opt = self.fut.borrow_mut();
+                let mut cx = core::task::Context::from_waker(&waker);
+                if let Some(fut) = &mut *fut_opt {
+                    match fut.as_mut().poll(&mut cx) {
+                        core::task::Poll::Ready(_) => *fut_opt = None,
+                        core::task::Poll::Pending => {}
+                    }
+                }
+            })
+            .expect("No event loop despite we checked");
+        }
+    }
+
+    alloc::sync::Arc::new(FutureRunner {
+        #[cfg(feature = "std")]
+        thread: std::thread::current().id(),
+        fut: RefCell::new(Some(Box::pin(fut))),
+    })
+    .wake();
+    Ok(())
+}
+
+#[test]
+fn test_spawn_future_from_thread() {
+    std::thread::spawn(|| {
+        assert_eq!(
+            spawn_future(async { panic!("the future shouldn't be run since we're in a thread") }),
+            Err(EventLoopError::NoEventLoopProvider)
+        );
+    })
+    .join()
+    .unwrap();
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
