@@ -592,7 +592,7 @@ impl ComponentDefinition {
     pub fn create(&self) -> Result<ComponentInstance, PlatformError> {
         generativity::make_guard!(guard);
         Ok(ComponentInstance {
-            inner: self.inner.unerase(guard).clone().create(Default::default()),
+            inner: self.inner.unerase(guard).clone().create(Default::default())?,
         })
     }
 
@@ -614,13 +614,16 @@ impl ComponentDefinition {
 
     /// Instantiate the component using an existing window.
     #[doc(hidden)]
-    pub fn create_with_existing_window(&self, window: &Window) -> ComponentInstance {
+    pub fn create_with_existing_window(
+        &self,
+        window: &Window,
+    ) -> Result<ComponentInstance, PlatformError> {
         generativity::make_guard!(guard);
-        ComponentInstance {
+        Ok(ComponentInstance {
             inner: self.inner.unerase(guard).clone().create(WindowOptions::UseExistingWindow(
                 WindowInner::from_pub(window).window_adapter(),
-            )),
-        }
+            ))?,
+        })
     }
 
     /// List of publicly declared properties or callback.
