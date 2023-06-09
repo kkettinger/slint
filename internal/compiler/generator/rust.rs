@@ -1282,60 +1282,85 @@ fn generate_item_tree(
         quote!(&self_rc)
     };
 
-    let (window_adapter_accessor, window_adapter_ref, maybe_window_adapter, new_result, new_end) =
-        if let Some(parent_ctx) = parent_ctx {
-            (
-                quote!(self.root.get().unwrap().upgrade().unwrap().window_adapter()),
-                None,
-                quote!(self
-                    .root
-                    .get()
-                    .and_then(|root_weak| root_weak.upgrade())
-                    .and_then(|root| root.maybe_window_adapter())),
-                quote!(vtable::VRc<slint::private_unstable_api::re_exports::ComponentVTable, Self>),
-                if parent_ctx.repeater_index.is_some() {
-                    // Repeaters run their user_init() code from RepeatedComponent::init() after update() initialized model_data/index.
-                    quote!(self_rc)
-                } else {
-                    quote! {
-                        Self::user_init(slint::private_unstable_api::re_exports::VRc::map(self_rc.clone(), |x| x));
-                        self_rc
-                    }
-                },
-            )
-        } else {
-            (
-                quote!(self.window_adapter_ref().unwrap().clone()),
-                Some(quote!(
-                    fn window_adapter_ref(
-                        &self,
-                    ) -> Result<
-                        &Rc<dyn slint::private_unstable_api::re_exports::WindowAdapter>,
-                        slint::PlatformError,
-                    > {
-                        self.window_adapter_.get_or_try_init(|| {
-                            let adapter = slint::private_unstable_api::create_window_adapter()?;
-                            let self_rc = VRcMapped::origin(
-                                &self.self_weak.get().unwrap().upgrade().unwrap(),
-                            );
-                            slint::private_unstable_api::re_exports::WindowInner::from_pub(
-                                adapter.window(),
-                            )
-                            .set_component(&self_rc);
-                            core::result::Result::Ok(adapter)
-                        })
-                    }
-                )),
-                quote!(self.window_adapter_.get().cloned()),
-                quote!(
-                    core::result::Result<
-                        vtable::VRc<slint::private_unstable_api::re_exports::ComponentVTable, Self>,
-                        slint::PlatformError,
-                    >
-                ),
-                quote!(core::result::Result::Ok(self_rc)),
-            )
-        };
+    let (window_adapter_functions, new_result, new_end) = if let Some(parent_ctx) = parent_ctx {
+        (
+            quote!(
+                #[allow(unused)]
+                fn window_adapter(
+                    &self,
+                ) -> Rc<dyn slint::private_unstable_api::re_exports::WindowAdapter>
+                {
+                    self.root.get().unwrap().upgrade().unwrap().window_adapter()
+                }
+
+                #[allow(unused)]
+                fn maybe_window_adapter(
+                    &self,
+                ) -> Option<Rc<dyn slint::private_unstable_api::re_exports::WindowAdapter>>
+                {
+                    self.root
+                        .get()
+                        .and_then(|root_weak| root_weak.upgrade())
+                        .and_then(|root| root.maybe_window_adapter())
+                }
+            ),
+            quote!(vtable::VRc<slint::private_unstable_api::re_exports::ComponentVTable, Self>),
+            if parent_ctx.repeater_index.is_some() {
+                // Repeaters run their user_init() code from RepeatedComponent::init() after update() initialized model_data/index.
+                quote!(self_rc)
+            } else {
+                quote! {
+                    Self::user_init(slint::private_unstable_api::re_exports::VRc::map(self_rc.clone(), |x| x));
+                    self_rc
+                }
+            },
+        )
+    } else {
+        (
+            quote!(
+                #[allow(unused)]
+                fn window_adapter(
+                    &self,
+                ) -> Rc<dyn slint::private_unstable_api::re_exports::WindowAdapter>
+                {
+                    self.window_adapter_ref().unwrap().clone()
+                }
+
+                fn window_adapter_ref(
+                    &self,
+                ) -> Result<
+                    &Rc<dyn slint::private_unstable_api::re_exports::WindowAdapter>,
+                    slint::PlatformError,
+                > {
+                    self.window_adapter_.get_or_try_init(|| {
+                        let adapter = slint::private_unstable_api::create_window_adapter()?;
+                        let self_rc =
+                            VRcMapped::origin(&self.self_weak.get().unwrap().upgrade().unwrap());
+                        slint::private_unstable_api::re_exports::WindowInner::from_pub(
+                            adapter.window(),
+                        )
+                        .set_component(&self_rc);
+                        core::result::Result::Ok(adapter)
+                    })
+                }
+
+                #[allow(unused)]
+                fn maybe_window_adapter(
+                    &self,
+                ) -> Option<Rc<dyn slint::private_unstable_api::re_exports::WindowAdapter>>
+                {
+                    self.window_adapter_.get().cloned()
+                }
+            ),
+            quote!(
+                core::result::Result<
+                    vtable::VRc<slint::private_unstable_api::re_exports::ComponentVTable, Self>,
+                    slint::PlatformError,
+                >
+            ),
+            quote!(core::result::Result::Ok(self_rc)),
+        )
+    };
 
     let parent_item_expression = parent_ctx.and_then(|parent| {
         parent.repeater_index.map(|idx| {
@@ -1431,18 +1456,7 @@ fn generate_item_tree(
                 &*ITEM_ARRAY.get_or_init(|| Box::new([#(#item_array),*]))
             }
 
-            #[allow(unused)]
-            fn window_adapter(&self) -> Rc<dyn slint::private_unstable_api::re_exports::WindowAdapter> {
-                #window_adapter_accessor
-            }
-
-            #window_adapter_ref
-
-            #[allow(unused)]
-            fn maybe_window_adapter(&self) -> Option<Rc<dyn slint::private_unstable_api::re_exports::WindowAdapter>>
-            {
-                #maybe_window_adapter
-            }
+            #window_adapter_functions
         }
 
         impl slint::private_unstable_api::re_exports::PinnedDrop for #inner_component_id {
