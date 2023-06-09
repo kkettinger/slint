@@ -7,7 +7,7 @@
 
 use super::*;
 use atomic_polyfill::{AtomicU32, Ordering};
-use core::convert::TryInto;
+use core::{convert::TryInto, ffi::c_void};
 
 /// This trait is implemented by the [`#[vtable]`](macro@vtable) macro.
 ///
@@ -206,6 +206,16 @@ impl<VTable: VTableMetaDropInPlace + 'static> VRc<VTable, Dyn> {
         map_fn: impl for<'r> FnOnce(Pin<VRef<'r, VTable>>) -> Pin<&'r MappedType>,
     ) -> VRcMapped<VTable, MappedType> {
         VRcMapped { parent_strong: this.clone(), object: map_fn(Self::borrow_pin(&this)).get_ref() }
+    }
+
+    pub unsafe fn as_raw(&self) -> *const c_void {
+        self.inner.as_ptr() as _
+    }
+
+    pub unsafe fn from_raw(raw_dyn: *const c_void) -> Self {
+        let inner: NonNull<VRcInner<'static, VTable, Dyn>> = core::mem::transmute(raw_dyn);
+        inner.as_ref().strong_ref.fetch_add(1, Ordering::SeqCst);
+        Self { inner }
     }
 }
 impl<VTable: VTableMetaDropInPlace, X> VRc<VTable, X> {

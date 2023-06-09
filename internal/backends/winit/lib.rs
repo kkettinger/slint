@@ -20,7 +20,18 @@ pub(crate) mod event_loop;
 /// Internal type used by the winit backend for thread communcation and window system updates.
 #[non_exhaustive]
 pub enum SlintUserEvent {
-    CustomEvent { event: CustomEvent },
+    CustomEvent {
+        event: CustomEvent,
+    },
+    #[cfg(not(target_arch = "wasm32"))]
+    AccessKitActionRequestEvent(accesskit_winit::ActionRequestEvent),
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+impl From<accesskit_winit::ActionRequestEvent> for SlintUserEvent {
+    fn from(event: accesskit_winit::ActionRequestEvent) -> Self {
+        Self::AccessKitActionRequestEvent(event)
+    }
 }
 
 mod renderer {
