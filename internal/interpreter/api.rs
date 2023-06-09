@@ -608,7 +608,7 @@ impl ComponentDefinition {
                 .inner
                 .unerase(guard)
                 .clone()
-                .create(WindowOptions::CreateWithCanvasId(canvas_id.into())),
+                .create(WindowOptions::CreateWithCanvasId(canvas_id.into()))?,
         })
     }
 
